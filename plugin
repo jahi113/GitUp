@@ -1,0 +1,72 @@
+<dependencies>
+    <dependency>
+        <groupId>org.spigotmc</groupId>
+        <artifactId>spigot-api</artifactId>
+        <version>1.20.4-R0.1-SNAPSHOT</version> <!-- Replace with your server version -->
+        <scope>provided</scope>
+    </dependency>
+</dependencies>
+package com.example.azurescythe;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.event.player.PlayerInteractEvent.Action;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.plugin.java.JavaPlugin;
+
+public class AzureScythePlugin extends JavaPlugin implements Listener {
+
+    @Override
+    public void onEnable() {
+        getServer().getPluginManager().registerEvents(this, this);
+        getLogger().info("AzureScythePlugin enabled!");
+    }
+
+    @Override
+    public void onDisable() {
+        getLogger().info("AzureScythePlugin disabled!");
+    }
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            Player player = event.getPlayer();
+            ItemStack item = player.getInventory().getItemInMainHand();
+            
+            if (item != null && item.getType() != Material.AIR && item.getCustomModelData() == 1 && item.getCustomModelData() == 1) {
+                // Perform the dash
+                double dashSpeed = 2.0;
+                player.setVelocity(player.getLocation().getDirection().multiply(dashSpeed));
+                player.setFallDistance(0);
+
+                // Prevent falling damage
+                player.setNoDamageTicks(100);
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPlayerDamage(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        ItemStack item = player.getInventory().getItemInMainHand();
+
+        if (item != null && item.getType() != Material.AIR && item.getCustomModelData() == 1 && item.getCustomModelData() == 1) {
+            if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
+                player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 100, 1));
+            }
+        }
+    }
+}
+name: AzureScythePlugin
+version: 1.0
+main: com.example.azurescythe.AzureScythePlugin
+api-version: 1.16
